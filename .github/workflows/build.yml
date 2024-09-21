@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: windows-latest
     steps:
     - name: Checkout main repository
@@ -24,7 +26,7 @@ jobs:
         if ($LASTEXITCODE -eq 0 -and $tag -match '^v(\d+\.\d+\.\d+)') {
           $version = $matches[1]
           echo "VERSION=$version"
-          (Get-Content .\Directory.Build.props) -replace '<Version>.*</Version>', "<Version>$version</Version>" | Set-Content .\Directory.Build.props
+          (Get-Content ./Directory.Build.props) -replace '<DynamicVersion>.*</DynamicVersion>', "<DynamicVersion>$version</DynamicVersion>" | Set-Content ./Directory.Build.props
         } else {
           echo "No version tag found. Using default version."
           exit 0
@@ -38,9 +40,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: InvestigatorUnlocker.dll
-        path: bin\Release\netstandard2.0\InvestigatorUnlocker.dll
+        path: bin/Release/netstandard2.0/InvestigatorUnlocker.dll
     - name: Release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: bin\Release\netstandard2.0\InvestigatorUnlocker.dll
+        files: bin/Release/netstandard2.0/InvestigatorUnlocker.dll
